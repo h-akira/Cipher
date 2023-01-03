@@ -16,7 +16,7 @@ def parse_args():
   parser.add_argument("-p", "--public-key", metavar="key-file", help="アルファベット順が記述されたファイル")
   parser.add_argument("-i", "--input", metavar="input-file", help="入力ファイル")
   parser.add_argument("-o", "--output", metavar="output-file", help="出力ファイル")
-  parser.add_argument("-l", "--letter-case", choices=['upper','lower','no'], default='upper', help="大文字と小文字を区別する")
+  parser.add_argument("-l", "--letter-case", choices=['upper','lower','distinguish'], default='upper', help="大文字に統一，小文字に統一，区別する")
   parser.add_argument("-d", "--decipher", action="store_true", help="解読モード")
   parser.add_argument("--language", metavar="language", default="en", help="言語（pycld2に依存）")
   options = parser.parse_args()
