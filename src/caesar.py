@@ -87,7 +87,7 @@ def main():
   else:
     secret_key, output, rate = decipher(text,pk,options.language) 
     print(f"発見された鍵: {secret_key}")
-    print(f"英語の割合: {rate}%")
+    print(f"言語の割合: {rate}%")
 
   if options.output:
     with open(options.output, mode='w') as f:
