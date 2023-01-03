@@ -37,7 +37,6 @@ def encryption(text,sk=0,pk="abcdefghijklmnopqrstuvwxyz"):
       output += pk[i]
     else:
       output += w
-  
   return output
 
 def decipher(text,pk="abcdefghijklmnopqrstuvwxyz",language="ENGLISH"):
