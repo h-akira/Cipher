@@ -54,6 +54,10 @@ def main():
   output = sm.encryption(text,key,decryption=options.decryption)
 
   if options.output:
+    if os.path.isfile(options.output):
+      if "y" != input(f"{options.output}は既に存在します．上書きしますか？(y/other):"):
+        print(output)
+        sys.exit()
     with open(options.output, mode='w') as f:
       print(output, file=f)
   else:
