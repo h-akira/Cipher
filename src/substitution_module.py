@@ -71,6 +71,13 @@ class Key:
     self.conversion = list("".join(self.conversion).lower())
     self.key_check()
 
+def add_key(key1, key2):
+  key = Key()
+  key.empty_key()
+  key.add_pair(key1.target, key1.conversion)
+  key.add_pair(key2.target, key2.conversion)
+  return key
+
 def encryption(text,key,decryption=False):
   output = ""
   for w in list(text):
@@ -83,12 +90,12 @@ class CipherText:
       data = f.read()
     self.text = data[:-1]
     self.decrypted_text = self.text
-    self.div_text()
+    # self.div_text()
   def input_text(self):
     self.text = input("Cipher Text:")
     self.text = input("Cipher Text:")
     self.decrypted_text = self.text
-    self.div_text()
+    # self.div_text()
   def read_target(self, file_name):
     with open(file_name, mode='r') as f:
       data = f.read()
@@ -123,22 +130,23 @@ class CipherText:
     # self.decrypted_words = [t for t in self.decrypted_text.replace("\n"," ").replace(",","").replace(".","").replace("'", "").replace('"','').split(" ")]
 
 def find_the_and(FA,CT,key):
+  print("Now Serch 'The' and 'And':")
   try:
     THE, AND = sorted(FA.triple, key=lambda x: x[2], reverse=True)[:2]
   except AttributeError:
     FA.cal_triple()
     THE, AND = sorted(FA.triple, key=lambda x: x[2], reverse=True)[:2]
-  print("Key:")
+  print("\nFound Key:")
   if THE[0][0] in "abcdefghijklmnopqrstuvwxyz".upper():
-    print("THEAND")
-    print(THE[0]+AND[0])
+    for i,j in zip(list("THEAND"), THE[0]+AND[0]):
+      print(" "+i+"->"+j)
     key.add_pair("THEAND", THE[0]+AND[0])
   else:
-    print("theand")
-    print(THE[0]+AND[0])
+    for i,j in zip(list("theand"), THE[0]+AND[0]):
+      print(" "+i+"->"+j)
     key.add_pair("theand", THE[0]+AND[0])
   CT.update(key)
-  # dic.set_words(CT)
+  print("-"*30)
 
 class Dictionary:
   def __init__(self, dbfile):
@@ -154,19 +162,17 @@ class Dictionary:
       return False
   def close(self):
     self.conn.close()
-  def set_words(self, text, length = 3, weight=True):
+  def set_words(self, text, length = 3):
     words = [t for t in text.replace("\n"," ").replace(",","").replace(".","").replace("'", "").replace('"','').split(" ")]
     self.words=[]
     self.num = []
-    self.weight=weight
     for w in words:
       if w in self.words:
         self.num[self.words.index(w)] += 1
       else:
         self.words.append(w)
         self.num.append(1)
-    if self.weight:
-      self.full = sum(self.num)
+    self.full = sum(self.num)
   def cal_rate(self, key=None):
     score = 0
     if key:
@@ -193,6 +199,7 @@ class FrequencyAnalysis:
   def cal_single(self):
     target = self.target
     self.single = self.calculate(target)
+    # print(sorted(self.single, key=lambda x: x[2], reverse=True))
   def cal_double(self):
     target = [i+j for i in self.target for j in self.target]
     self.double = self.calculate(target)
@@ -222,32 +229,28 @@ def brute_force(CT, FA, key, N, n, dic):
     general_frequency.remove(w)
   for w in key.conversion:
     text_frequency.remove(w)
-  # print(sorted(FA.single, key=lambda x: x[2], reverse=True))
-  try:
-    temporary_key = Key()
-    temporary_key.empty_key()
-    temporary_key.add_pair("".join(general_frequency[N:]),"".join(text_frequency[N:]))
-    text = encryption(CT.decrypted_text, temporary_key, decryption=True)
-  except IndexError:
-    print("最終じゃなかったらエラー")
-    pass
-  # print(general_frequency)
-  dic.set_words(text)
+  # dic.set_words(CT.text)
   new = [None, 0]
   counter = 0
-  print("".join(general_frequency))
-  print("".join(text_frequency))
+  print("Now Serch:")
+  print(" "+"".join(general_frequency[:N]))
+  print(" "+"".join(text_frequency[:N]))
   for target in itertools.permutations(general_frequency[:N]):
     temporary_key = Key()
     temporary_key.empty_key()
     temporary_key.add_pair("".join(target),"".join(text_frequency[:N]))
-    # t = encryption(text, temporary_key, decryption=True)
+    temporary_key.add_pair("".join(general_frequency[N:]),"".join(text_frequency[N:]))
+    temporary_key.add_pair("".join(key.target),"".join(key.conversion))
     rate = dic.cal_rate(temporary_key)
     if new[1] < rate:
       new = [temporary_key, rate]
     counter += 1
+  print("\nFound Key:")
+  for i in range(n):
+    print(" "+new[0].target[i],"->",new[0].conversion[i])
   key.add_pair(new[0].target[:n], new[0].conversion[:n])
   CT.update(key)
+  print("-"*30)
   # dic.set_words(CT)
 
 
