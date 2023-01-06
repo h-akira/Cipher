@@ -68,8 +68,6 @@ def main():
   print("-"*30)
   # theとandを見つける
   sm.find_the_and(FA,CT,key)
-  # print(key.target)
-  # print(key.conversion)
  
   # 総当り攻撃
   while True:
