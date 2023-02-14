@@ -6,7 +6,6 @@
 # Import
 import sys
 import os
-import numpy
 import random
 
 class Rotor:
