@@ -15,8 +15,9 @@ def parse_args():
 """, formatter_class = argparse.ArgumentDefaultsHelpFormatter)
   parser.add_argument("--version", action="version", version='%(prog)s 0.0.1')
   parser.add_argument("-t", "--target", metavar="target-file", help="変換対象の文字列が書かれたテキストファイル")
-  parser.add_argument("-i", "--input", metavar="input-file", help="入力ファイル")
-  parser.add_argument("-o", "--output", metavar="output-file", help="出力ファイル")
+  parser.add_argument("-i", "--input", metavar="input-file", help="入力ファイル（暗号文）")
+  parser.add_argument("-o", "--output", metavar="output-file", help="出力ファイル（解読文）")
+  parser.add_argument("-k", "--key", metavar="key-file", help="出力ファイル（鍵）")
   parser.add_argument("-d", "--db-file", metavar="db-file", default="ejdict.sqlite3", help="データベースファイル")
   parser.add_argument("-N", "--Number", metavar="数字", type=int, default=6, help="総当り攻撃の未知数")
   parser.add_argument("-n", "--number", metavar="数字", type=int, default=2, help="総当り攻撃の決定数")
@@ -70,28 +71,74 @@ def main():
   sm.find_the_and(FA,CT,key)
  
   # 総当り攻撃
+  # while True:
   while True:
     if len(CT.target)>options.Number:
       sm.brute_force(CT,FA,key,options.Number,options.number, dic)
     else:
       sm.brute_force(CT,FA,key,len(CT.target),len(CT.target), dic)
       break
-    # print("Key:")
-    # print(key.target)
-    # print(key.conversion)
   output = CT.decrypted_text
+    # print("----- Decrypted Text(Up to 300 characters) -----")
+    # if len(output)>300:
+    #   print(output[:300], ".....")
+    # else:
+    #   print(output)
+    # print("------------------------------------------------")
+    # if "y" == input("Is that enough? (y/other):"):
+    #   break
+    # else:
+    #   print("Initialize the key. ")
+    #   correct_target = input("Please enter the letters that you think are correct in the decrypted text above. \n: ")
+    #   correct_conversion = sm.encryption(correct_target, key)
+    #   print("Add the followeing pairs:")
+    #   for i, j in zip(list(correct_target), list(correct_conversion)):
+    #     print(f" {i} -> {j}")
+    #   key = sm.Key()
+    #   key.empty_key()
+    #   key.add_pair(correct_target, correct_conversion)
+    #   while True:
+    #     if "y" == input("Add other pairs? (y/other):"):
+    #       correct_target = input("Target    :")
+    #       correct_conversion = input("Conversion:")
+    #       key.add_pair(correct_target, correct_conversion)
+    #     else:
+    #       break
+    #   CT.target = 
+    #   print("Start Analysis:")
 
   if options.output:
     if os.path.isfile(options.output):
       if "y" != input(f"{options.output}は既に存在します．上書きしますか？(y/other):"):
+        print("\n======= Decrypted Text =======")
         print(output)
-        sys.exit()
-    with open(options.output, mode='w') as f:
-      print("Decrypted_Text:")
-      print(output, file=f)
+      else:
+        with open(options.output, mode='w') as f:
+          print(output, file=f)
+    else:
+      with open(options.output, mode='w') as f:
+        print(output, file=f)
   else:
-    print("Decrypted_Text:")
+    print("\n======= Decrypted Text =======")
     print(output)
+  if options.key:
+    if os.path.isfile(options.key):
+      if "y" != input(f"{options.key}は既に存在します．上書きしますか？(y/other):"):
+        print("\n======= Key =======")
+        print(f"Target    :{''.join(key.target)} ")
+        print(f"Conversion:{''.join(key.conversion)}")
+      else:
+        with open(options.key, mode='w') as f:
+          print("".join(key.target), file=f)
+          print("".join(key.conversion), file=f)
+    else:
+      with open(options.key, mode='w') as f:
+        print("".join(key.target), file=f)
+        print("".join(key.conversion), file=f)
+  else:
+    print("\n======= Key =======")
+    print(f"Target    :{''.join(key.target)} ")
+    print(f"Conversion:{''.join(key.conversion)}")
 
 if(__name__ == '__main__'):
   main()
